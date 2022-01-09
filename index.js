@@ -270,7 +270,7 @@ function rand(min, max) { // min and max included
 
 // Events
 
-window.addEventListener('mousedown', (event) => {
+window.addEventListener('click', (event) => {
     // console.log('clicked on page')
     playerTarget += playerPush
     bgTarget += 30
