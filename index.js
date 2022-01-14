@@ -6,6 +6,8 @@ document.getElementById('canvas').width = window.innerWidth
 document.getElementById('canvas').height = window.innerHeight
 
 // Variables
+let animationId;
+let stopAnim = false;
 let playerPos = 10
 let playerPosRelative = 10
 const playerPush = 50
@@ -16,12 +18,12 @@ const rotationSpeed = 1.5
 let bgPos = 10
 let bgTarget = 0
 let SpiralsInfo = [
-    [120, 0, 'red', 'red', 'green', 'blue', 'purple'], // [positon, rotation, currentColor, color1, color2, color3, color4]
+    [120, 0, 'red', 'red', 'green', 'blue', 'purple'], // [positon, rotation, depricatedColor, color1, color2, color3, color4]
 ]
 let checkpointsSpawn = [
     [120, 'blue'], // [y-position, color to change to]
 ]
-const avalibleColors = ['green', 'blue', 'red', 'pink', 'pink', 'yellow', 'orange']
+const avalibleColors = ['green', 'purple', 'red', 'blue', 'orange', 'yellow', 'cyan']
 
 // Objects
 
@@ -113,17 +115,19 @@ class Checkpoint{
 function initilize()
 {
     let randPos = 120
-    let colorChange = avalibleColors[rand(0, 6)]
+    let colorChange = avalibleColors[rand(0, avalibleColors.length - 1)]
     
-    for (var i = 0; i<rand(5, 10); i++)
+    playerColor = avalibleColors[rand(0, 2)]
+
+    for (var i = 0; i<50; i++)
     {
         randPos -= 300
 
         checkpointsSpawn.push( [ randPos + 150, colorChange ] )
 
-        SpiralsInfo.push( [randPos, 0, 'depricated-color', avalibleColors[rand(0, 6)], avalibleColors[rand(0, 6)], colorChange, avalibleColors[rand(0, 6)] ] )
+        SpiralsInfo.push( [randPos, 0, 'depricated-color', avalibleColors[rand(0, avalibleColors.length - 1)], avalibleColors[rand(0, avalibleColors.length - 1)], colorChange, avalibleColors[rand(0, avalibleColors.length - 1)] ] )
 
-        colorChange = avalibleColors[rand(0, 6)]
+        colorChange = avalibleColors[rand(0, (avalibleColors.length - 1))]
         
     }
     Update()
@@ -185,7 +189,7 @@ function Update()
             bottomColor = spir[6]
             topColor = spir[4]
         }
-        if(spir[1] == 360)
+        if(spir[1] >= 360)
         {
             // console.log('360')
             SpiralsInfo[spirInd][1] = 0
@@ -199,7 +203,7 @@ function Update()
         { // checks if the distance between the sprial's bottom and the player is between the players radius (20)
             if(bottomColor != playerColor)
             {
-                console.log(bottomColor + " " + playerColor)
+                console.log(playerColor + " " + bottomColor)
                 GameOver()
                 return
             }
@@ -210,7 +214,7 @@ function Update()
             // checks if the distance between the sprial's top and the player is between the players radius (20)
             if(topColor != playerColor)
             {
-                console.log(topColor + " " + playerColor)
+                console.log(playerColor + " " + topColor)
                 GameOver()
                 return
             }
@@ -235,6 +239,12 @@ function Update()
             // change player's color
             playerColor = checkP[1]
             // console.log(playerColor)
+
+            if(JSON.parse(document.getElementById('scoreTxt').innerHTML) == 50)
+            {
+                alert('Congrats! You actualy beat the game')
+                GameOver()
+            }
         }
     })
 
@@ -246,8 +256,10 @@ function Update()
         playerTarget -= 10
     }
 
-    if(playerPos < -100 || playerPos > 500)
+    if(playerPos < -100 || playerPos > (canvas.clientHeight - 100))
     {
+        console.log(playerPos)
+        // alert()
         GameOver()
     }
 
@@ -255,33 +267,68 @@ function Update()
     p.draw()
     // console.log(playerPos)
 
-    requestAnimationFrame(Update)
+    if(stopAnim)
+    {
+        return
+    }
+
+    animationId = requestAnimationFrame(Update)
 }
 
 function GameOver()
 {
+    // return
     // alert('Game Over')
-    location.href = '/index.html'
+    stopAnim = true
+    cancelAnimationFrame(animationId)
+
+    setTimeout(() => {
+        document.getElementById('scoreGameOverTxt').innerHTML = 'Score: ' + document.getElementById('scoreTxt').innerHTML
+        document.getElementById('gameoverUI').style.display = 'block'
+        // location.href = '/index.html'
+    }, 0); // 1200 
+
+}
+
+function restartGame()
+{
+    console.log('Restarting Game')
+    // document.getElementById('gameoverUI').style.display = 'none'
+    // stopAnim = false
+    // initilize()
+    location.href = '/'
 }
 
 function rand(min, max) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
+function movePlayer()
+{
+    playerTarget += playerPush
+    bgTarget += 30
+
+    if(playerPos > (canvas.clientHeight - 250)) // offset move
+    {
+        bgTarget += 70
+        playerTarget -= 60
+    }
+}
+
 // Events
 
 window.addEventListener('click', (event) => {
     // console.log('clicked on page')
-    playerTarget += playerPush
-    bgTarget += 30
+    movePlayer()
 })
 
 window.addEventListener('keypress', (event) => {
     // console.log('clicked on page')
-    if(event.code == 'Enter')
+    if(event.code == 'Enter' || event.code == 'Space')
     {
         // console.log('spiral pos: ' + (128 + bgPos) )
         // console.log('player pos: ' + (((canvas.clientHeight - playerPos) - 100)) )
+        movePlayer()
     
     }
 })
