@@ -136,7 +136,7 @@ function initilize()
 function Update()
 {
     // Clear
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
 
     // Gravity
@@ -322,7 +322,7 @@ window.addEventListener('click', (event) => {
     movePlayer()
 })
 
-window.addEventListener('keypress', (event) => {
+window.addEventListener('keyup', (event) => {
     // console.log('clicked on page')
     if(event.code == 'Enter' || event.code == 'Space')
     {
