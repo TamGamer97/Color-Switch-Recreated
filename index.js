@@ -284,6 +284,21 @@ function GameOver()
 
     setTimeout(() => {
         document.getElementById('scoreGameOverTxt').innerHTML = 'Score: ' + document.getElementById('scoreTxt').innerHTML
+
+        let hScore = Cookies.get('hScore')
+
+        if(!hScore)
+        {
+            hScore = '0'
+        }
+
+        if( JSON.parse(document.getElementById('scoreTxt').innerHTML) > JSON.parse(hScore) ) // Your score is grater than your highest score
+        {
+            Cookies.set('hScore', document.getElementById('scoreTxt').innerHTML)
+        }
+
+        document.getElementById('HighestScoreTxt').innerHTML = 'Highest Score: ' + Cookies.get('hScore')
+        
         document.getElementById('gameoverUI').style.display = 'block'
         // location.href = '/index.html'
     }, 0); // 1200 
