@@ -290,6 +290,7 @@ function GameOver()
         if(!hScore)
         {
             hScore = '0'
+            Cookies.set("hScore", hScore)
         }
 
         if( JSON.parse(document.getElementById('scoreTxt').innerHTML) > JSON.parse(hScore) ) // Your score is grater than your highest score
